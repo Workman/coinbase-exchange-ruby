@@ -3,8 +3,9 @@ module Coinbase
     # Websocket client for Coinbase Exchange
     class Websocket
       def initialize(options = {})
-        @ws_url = options[:ws_url] || "wss://ws-feed.gdax.com"
-        @product = options[:product_id] || 'BTC-USD'
+        @ws_url = options[:ws_url] || "wss://ws-feed.pro.coinbase.com"
+        @products = options[:products] || ['BTC-USD']
+        @channels = options[:channels] || ['full', 'heartbeat']
         @keepalive = options[:keepalive] || false
 
         @message_cb = ->(_data) { nil }
@@ -44,8 +45,9 @@ module Coinbase
       end
 
       def subscribe!(options = {})
-        product = options[:product_id] || @product
-        @socket.send({ type: 'subscribe', product_id: product }.to_json)
+        products = options[:products] || @products
+        channels = options[:channels] || @channels
+        @socket.send({ type: 'subscribe', product_ids: products, channels: channels }.to_json)
       end
 
       def ping(options = {})
